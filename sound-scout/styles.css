@@ -1,0 +1,330 @@
+/* main css format */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(150deg, #AA53B5 0%, #3595CC 100%);
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    color: white;  
+} 
+
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header{
+    text-align: center;
+    padding: 40px 0;
+}
+
+.header h1{
+    font-size: 5rem;
+    margin-bottom: 5px;
+}
+
+p {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: "Fira Code", monospace;
+    font-size: 1.1rem;
+}
+
+/* authentication section */
+.auth-section{
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    align-items: center;
+}
+
+.auth-section h2{
+    font-size: 2rem;
+}
+
+#spotify-login{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#spotify-logged-in{
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#spotify-button{
+    align-self: center;  
+    padding: 10px 20px;  
+    text-align: center;
+    background: #1DB954;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#spotify-button:hover {
+    background: #1ed760;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(29, 185, 84, 0.3);
+}
+
+/* features section */
+.features-section{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.feature-card{
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    transition: transform 0.3s ease;
+    text-align: center;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.0);
+}
+
+.feature-card:nth-child(5) {
+    grid-column: 1 / -1;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+}
+
+.feature-card:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.feature-card.is-active{
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    transform: translateY(-6px);
+}
+
+/* recommendation + user interaction */
+.recommendation-section{
+    display: none;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    text-align: center;
+    align-items: center;
+}
+
+.recommend-pannels{
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+        
+.recommend-pannels h2{
+    color:white; 
+    font-size: 2rem;
+}
+   
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+        
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+input, select, textarea {
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1rem;
+}
+        
+input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#genre-dropdown{
+    background: #7173C0;
+    background-color: #7173C0;
+    color: white;
+    font-family: "Fira Code", monospace;
+}
+
+#genre-text{
+    display: none;
+}
+
+/* checkbox, number input, and generate button */
+.generation-container {
+    display: flex;
+    flex-direction: column; 
+    margin-top: 20px;
+    text-align: center;
+    gap: 12px;
+    align-items: center;
+}
+
+#checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: "Fira Code", monospace;
+}
+
+.generation-container .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+label, #bpm-input, #similar-song {
+    font-family: "Fira Code", monospace;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* hide playlist for random recommendation */
+#checkbox-spacer {
+   display: flex;
+}
+
+/* Inline row used for BPM text and input */
+.inline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+/* Make sure the small inputs don't grow too wide */
+.inline-row input[type="number"] {
+    width: 120px;
+}
+
+@media (max-width: 520px) {
+    .inline-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+    .inline-row input[type="number"] {
+        width: 100%;
+    }
+}
+
+#check{
+    transform: scale(1.75); 
+    margin: 8px;
+    cursor: pointer;
+}
+
+.number-selection {
+    display: none;
+    align-items: center;
+    gap: 8px;
+} 
+
+#input-number {
+    padding: 5px 8px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 60px;
+    text-align: center;
+}
+
+.generate-btn {
+    align-self: center;  
+    padding: 10px 20px;  
+    background: #7173C0;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* output/generation css format */
+#generation-container{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px;
+    margin-bottom: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 5px;
+    transition: transform 0.3s ease;
+    text-align: center;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.0);
+}
+
+#song-output{
+    display: grid;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    align-items: center;
+}
+
+#song-output ul {
+    list-style-position: inside;
+    list-style-type: none;             
+    padding-left: 0; 
+}
+
+#song-output li::before {
+    content: "★"; 
+    font-size: 1.2em;
+}
