@@ -11,11 +11,19 @@ load_dotenv()
 
 app = Flask(__name__)
 
+#hhh 
 #secret key
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
+#make cookies
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",   # allow cross-origin
+    SESSION_COOKIE_SECURE=False       # True if using HTTPS; False is okay for localhost
+)
+
 #make it specific which orgins to accept 
-cors = CORS(app, origins="*")
+#cors = CORS(app, origins="*")
+cors = CORS(app, supports_credentials=True, origins="http://localhost:5173")
 
 #spotify OAuth setup
 cache_handler = FlaskSessionCacheHandler(session)
@@ -43,7 +51,9 @@ def login():
 def callback():
     code = request.args.get("code")
     if code:
-        sp_oauth.get_access_token(code)
+        token_info = sp_oauth.get_access_token(code)
+        session['token_info'] = token_info 
+        session.modified = True
     # Redirect back to frontend with success flag
     return redirect("http://localhost:5173/?login=success")
 
@@ -59,13 +69,18 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
-        return jsonify({"error": "User not logged in"}), 401
+    #token_info = session.get('token_info')
 
-    profile = sp.current_user()
+    #if not token_info or not sp_oauth.validate_token(token_info):
+    #    return jsonify({"error": "User not logged in"}), 401
+    
+    #sp1 = Spotify(auth=token_info['access_token'])
+    #profile = sp1.current_user()
+    #return jsonify({
+    #    "display_name": profile.get("display_name")
+    #})
     return jsonify({
-        "display_name": profile.get("display_name")
+        "display_name": sp.current_user().get("display_name")
     })
-
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

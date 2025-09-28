@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+//import { useReducer } from "react";
+import { getUser } from "./get-info";
 
 //click spotify button to redirect user to login page
 document.getElementById("spotify-button").addEventListener("click", () => {
@@ -16,11 +16,12 @@ window.addEventListener("load", async () => {
         const loggedInSection = document.getElementById('spotify-logged-in');
         const welcomeText = document.getElementById('welcome-text');
 
-        //const user = await axios.get("http://localhost:8080/api/user");
+        const userName = await getUser();
+        console.log(userName);
 
         if (loginSection) loginSection.style.display = 'none';
         if (loggedInSection) loggedInSection.style.display = 'flex';
-        if (welcomeText) welcomeText.textContent = `Welcome, user!`;
+        if (welcomeText) welcomeText.textContent = `Welcome, ${userName}!`;
     }
 });
 
