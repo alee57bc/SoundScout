@@ -26,7 +26,7 @@
 
                 <!-- View once user logs in -->
                 <div id ="spotify-logged-in">
-                    <h2 id="welcome-text"> Welcome, [User's Name]!</h2>
+                    <h2 id="welcome-text"> Welcome, Username!</h2>
                     <p>Let's explore music tailored to you</p>
                 </div>
             </div>
@@ -118,27 +118,21 @@
                             </div>  
                         </label>
                     </div>
-                        <p id="warning-text"> Make sure to fill in all sections </p>
-                        <!-- <a href="#song-output">
-                
-                            <button class="generate-btn" id="rec-button">
+                        <p id="warning-text"> Make sure all sections are filled in or correct</p>
+                        <button class="generate-btn" id="personal-rec-button">
                             Generate Recommendations ✨
                         </button>
-                            Generate buttons for all the different sections. add logic later-->
-                        <button class="generate-btn" id="personal-rec-button">
-                            1 Generate Recommendations ✨
-                        </button>
                         <button class="generate-btn" id="vibe-rec-btn">
-                            2 Generate Recommendations ✨
+                            Generate Recommendations ✨
                         </button>
                         <button class="generate-btn" id="genre-rec-btn">
-                            3 Generate Recommendations ✨
+                            Generate Recommendations ✨
                         </button>
                         <button class="generate-btn" id="similarity-rec-btn">
-                            4 Generate Recommendations ✨
+                            Generate Recommendations ✨
                         </button>
                         <button class="generate-btn" id="random-rec-btn">
-                            5 Generate Recommendations ✨
+                            Generate Recommendations ✨
                         </button>
 
                 </div>  
@@ -147,11 +141,7 @@
             <!-- Where songs get outputted -->
             <div id="song-output">
                 <h2> Your Recommendations!</h2>
-                <ul>
-                    <li> [Song Name] - [Artist Name] </li>
-                    <li> [Song Name] - [Artist Name] </li>    
-                    <li> [Song Name] - [Artist Name] </li>
-                </ul>
+                <ul id="song-list"></ul>
             </div>
     </body>
 </html>

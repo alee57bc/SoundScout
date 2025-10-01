@@ -10,9 +10,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-
-#hhh 
-#secret key
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
 #make cookies
@@ -50,10 +47,9 @@ def login():
 @app.route("/api/callback")
 def callback():
     code = request.args.get("code")
-    if code:
-        token_info = sp_oauth.get_access_token(code)
-        session['token_info'] = token_info 
-        session.modified = True
+    if code:    
+        token_info = sp_oauth.get_cached_token()  
+        session['token_info'] = token_info
     # Redirect back to frontend with success flag
     return redirect("http://localhost:5173/?login=success")
 
@@ -69,7 +65,9 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
-    return "User1"
+    user_profile = sp.current_user()
+
+    return user_profile['display_name']
     #token_info = session.get('token_info')
 
     #if not token_info or not sp_oauth.validate_token(token_info):

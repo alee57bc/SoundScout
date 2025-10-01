@@ -69,7 +69,7 @@
 
             //1 = clear value, 2 = clear display, 3 = item 1 and 2, 4 = uncheck checkbox
             const clearList = {'vibe-text': 1, 'genre-text': 3, 'bpm-input': 1, 'similar-song': 1, 'genre-dropdown': 1, 'input-number': 1,
-                                'number-selection': 2, 'check': 4
+                                'number-selection': 2, 'check': 4, 'warning-text': 2
                                 }
             for (let key of Object.keys(clearList)){
                 const currItem = document.getElementById(key)
@@ -128,8 +128,7 @@
                     songSection.style.display = 'none';
                 }
                 // hide generation buttons when closing
-                hideAllGenButtons();
-                
+                hideAllGenButtons(); 
             } 
         });
     });
@@ -176,19 +175,92 @@ if (checkbox) {
     });
 } 
 
-// song recs appear when any generation button is clicked
-// attach handlers to all generation buttons (they are hidden by default and shown per-panel)
+// song recs appear when the generation button is clicked
 document.querySelectorAll('.generate-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         // prevent any surrounding anchor's default jump
         if (e && e.preventDefault) { e.preventDefault(); e.stopPropagation(); }
         const songOutput = document.getElementById('song-output');
-        if (songOutput) {
-            songOutput.style.display = 'grid';
-            // ensure the element is visible before scrolling
-            requestAnimationFrame(() => {
-                songOutput.scrollIntoView({ behavior: 'smooth' });
-            });
+        
+        //logic to connect the song counter to song recommendations
+        const numberInput = parseInt(document.getElementById('input-number').value);
+        const songList = document.getElementById('song-list');
+        const songName = "Song"
+        const artistName = "Artist"
+        const checkbox = document.getElementById('check');
+        const warningText = document.getElementById('warning-text'); 
+        // Clear previous recommendations
+        songList.innerHTML = ' '; 
+        //clear song rec view
+        songOutput.style.display = 'none';
+
+        //logic to make sure all boxes are filled in before generating
+        const activeCard = (document.querySelector('.feature-card.is-active')).id;
+        let allFilled = false;
+        
+        if (activeCard == "personal-card") {
+            allFilled = true;
+        } else if (activeCard == "vibe-card") {
+            const vibeText = document.getElementById('vibe-text').value.trim();
+            if (vibeText !== "") {
+                allFilled = true;
+            }   
+        } else if (activeCard == "genre-card") {
+            const genreDropdown = document.getElementById('genre-dropdown').value;
+            const genreText = document.getElementById('genre-text').value.trim();
+            const bpm = document.getElementById('bpm-input').value.trim();
+            if (!isNaN(bpm) && bpm > 60 && bpm < 200) {
+                allFilled = true;
+            } else {
+                if (genreDropdown === "other" && genreText !== "") {
+                    allFilled = true;
+                } else if (genreDropdown !== "other" && genreDropdown !== "") {
+                    allFilled = true;
+                }  
+            } 
+        } else if (activeCard == "similarity-card") {
+            const similarSong = document.getElementById('similar-song').value.trim();    
+            if (similarSong !== "") {
+                allFilled = true;
+            }
+        } else if (activeCard == "random-card") {
+            allFilled = true;
+        }   
+
+        //checkbox logic to make sure that number input is valid if checked
+        if (checkbox.checked || !allFilled) {
+            if (!isNaN(numberInput) && numberInput > 0 && numberInput <= 10 && allFilled) {
+                for (let i = 1; i <= numberInput; i++) {
+                    const listItem = document.createElement('li');  
+                    listItem.textContent = `${songName} - ${artistName}`;
+                    songList.appendChild(listItem);
+                    warningText.style.display = 'none';
+                }  
+                // show output
+                if (songOutput) {
+                    songOutput.style.display = 'grid';
+                    // ensure the element is visible before scrolling
+                    requestAnimationFrame(() => {
+                        songOutput.scrollIntoView({ behavior: 'smooth' });
+                    });
+                }
+            } else {
+                warningText.style.display = 'flex';
+            }
+        } else if (!checkbox.checked && allFilled) {
+            warningText.style.display = 'none';
+            if (songOutput) {
+                //add 1 song only
+                const listItem = document.createElement('li');  
+                listItem.textContent = `${songName} - ${artistName}`;
+                songList.appendChild(listItem);
+
+                songOutput.style.display = 'grid';
+                // ensure the element is visible before scrolling
+                requestAnimationFrame(() => {
+                    songOutput.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
         }
     });
 });
