@@ -27,36 +27,28 @@
                 <!-- View once user logs in -->
                 <div id ="spotify-logged-in">
                     <h2 id="welcome-text"> Welcome, [User's Name]!</h2>
-                    <p>Let's explore new music tailored to you</p>
+                    <p>Let's explore music tailored to you</p>
                 </div>
             </div>
 
             <!-- Menu for recommendation format-->
             <div class="features-section">
-                <a href="#personal-recommendations">
                 <button class="feature-card" id="personal-card" href="#personal-recommendations">
                     <h3>✨ Personal Recommendations 🎯</h3>
                     <p>Analyze your top tracks and discover music that matches your taste.</p>
                 </button>
-                </a>
-                <a href="#vibe-recommendations">
                 <button class="feature-card" id="vibe-card">
                     <h3>🎨 Vibe-Based Discovery 🫧</h3>
                     <p>Describe the mood you want and let AI find the perfect song to match.</p>
                 </button>
-                </a>
-                <a href="#genre-recommendations">
                 <button class="feature-card" id="genre-card">
                     <h3>⚡ BPM & Genre Matching 🔥</h3>
                     <p>Filter by tempo, genre, and audio geatures to find exactly what you need.</p>
-                </button>
-                </a>    
-                <a href="#similarity-recommendations">
+                </button> 
                 <button class="feature-card" id="similarity-card">
                     <h3>💭 Similarity Engine 🔍</h3>
                     <p>Find songs similar to any track using advanced audio feature analysis</p>
                 </button>
-                </a>
                 <button class="feature-card" id="random-card">
                     <h3> Random Song </h3>
                     <p>Get a random song. Who knows what you will get!</p>
@@ -126,9 +118,29 @@
                             </div>  
                         </label>
                     </div>
-                    <button class="generate-btn" id="personal-rec-button">
-                        Generate Recommendations ✨
-                    </button>
+                        <p id="warning-text"> Make sure to fill in all sections </p>
+                        <!-- <a href="#song-output">
+                
+                            <button class="generate-btn" id="rec-button">
+                            Generate Recommendations ✨
+                        </button>
+                            Generate buttons for all the different sections. add logic later-->
+                        <button class="generate-btn" id="personal-rec-button">
+                            1 Generate Recommendations ✨
+                        </button>
+                        <button class="generate-btn" id="vibe-rec-btn">
+                            2 Generate Recommendations ✨
+                        </button>
+                        <button class="generate-btn" id="genre-rec-btn">
+                            3 Generate Recommendations ✨
+                        </button>
+                        <button class="generate-btn" id="similarity-rec-btn">
+                            4 Generate Recommendations ✨
+                        </button>
+                        <button class="generate-btn" id="random-rec-btn">
+                            5 Generate Recommendations ✨
+                        </button>
+
                 </div>  
             </div>  
 

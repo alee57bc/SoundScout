@@ -266,6 +266,12 @@ label, #bpm-input, #similar-song {
     text-align: center;
 }
 
+#warning-text {
+    color: pink; 
+    font-size: 0.9rem;
+    display: none;
+}
+
 .generate-btn {
     align-self: center;  
     padding: 10px 20px;  
@@ -278,7 +284,7 @@ label, #bpm-input, #similar-song {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: inline-flex;
+    display: none;
     align-items: center;
     gap: 10px;
     text-align: center;
@@ -306,7 +312,7 @@ label, #bpm-input, #similar-song {
 }
 
 #song-output{
-    display: grid;
+    display: none;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 20px;

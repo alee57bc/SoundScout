@@ -69,6 +69,7 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
+    return "User1"
     #token_info = session.get('token_info')
 
     #if not token_info or not sp_oauth.validate_token(token_info):
@@ -79,8 +80,7 @@ def user():
     #return jsonify({
     #    "display_name": profile.get("display_name")
     #})
-    return jsonify({
-        "display_name": sp.current_user().get("display_name")
-    })
+    
+
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

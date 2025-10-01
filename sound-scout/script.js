@@ -2,6 +2,7 @@
 (function() {
     const cards = document.querySelectorAll('.feature-card');
     const recommendationSection = document.querySelector('.recommendation-section');
+    const songSection = document.getElementById('song-output');
     // Map card id -> panel id
     const panelMap = {
         'personal-card': 'personal-recommendations',
@@ -11,10 +12,25 @@
         'random-card': 'random-recommendations'
     };
 
+    // Map panel id -> generation button id (match actual IDs in index.html)
+    const generationMap = {
+        'personal-recommendations': 'personal-rec-button',
+        'vibe-recommendations': 'vibe-rec-btn',
+        'genre-recommendations': 'genre-rec-btn',
+        'similarity-recommendations': 'similarity-rec-btn',
+        'random-recommendations': 'random-rec-btn'
+    };
+
     function hideAllPanels() {
         document.querySelectorAll('.recommend-pannels').forEach(p => {
             p.style.display = 'none';
             p.classList.remove('is-active');
+        });
+    }
+
+    function hideAllGenButtons() {
+        document.querySelectorAll('.generate-btn').forEach(b => {
+            b.style.display = 'none';
         });
     }
 
@@ -26,7 +42,10 @@
     // initialize: hide recommendation section if no card active
     if (recommendationSection && !anyCardActive()) {
         recommendationSection.style.display = 'none';
+        songSection.style.display = 'none';
     }
+    // hide all generate buttons initially
+    hideAllGenButtons();
     // initialize checkbox spacer visibility based on any active card
     const activeCard = document.querySelector('.feature-card.is-active');
     if (checkboxSpacer) {
@@ -38,12 +57,15 @@
     }
 
     cards.forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            // prevent anchor default navigation if the card is wrapped in <a>
+            if (e && e.preventDefault) { e.preventDefault(); e.stopPropagation(); }
             const wasActive = card.classList.contains('is-active');
 
             // clear current state
             cards.forEach(c => c.classList.remove('is-active'));
             hideAllPanels();
+            songSection.style.display = 'none';
 
             //1 = clear value, 2 = clear display, 3 = item 1 and 2, 4 = uncheck checkbox
             const clearList = {'vibe-text': 1, 'genre-text': 3, 'bpm-input': 1, 'similar-song': 1, 'genre-dropdown': 1, 'input-number': 1,
@@ -68,12 +90,27 @@
                 // activate clicked card and show its panel
                 card.classList.add('is-active');
                 const panelId = panelMap[card.id];
+                const genButtonId = generationMap[panelId];
+                // set the generate button's id to the correct one for the selected card
                 if (panelId) {
                     const panel = document.getElementById(panelId);
                     if (panel) {
                         panel.style.display = 'flex';
                         panel.classList.add('is-active');
+                        // scroll the activated panel into view after layout changes
+                        requestAnimationFrame(() => {
+                            if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth' });
+                        });
                     }
+                    // hide all generation buttons then show the one relevant to this panel
+                    hideAllGenButtons();
+                    if (genButtonId) {
+                        const btn = document.getElementById(genButtonId);
+                        if (btn) {
+                            // use inline-flex so the button sits inline with the checkbox spacer
+                            btn.style.display = 'inline-flex';
+                        }
+                    }  
                 }
                 // show/hide the checkbox spacer depending on the selected card
                 if (checkboxSpacer) {
@@ -86,7 +123,13 @@
                 if (recommendationSection) recommendationSection.style.display = 'grid';
             } else {
                 // user clicked the active card -> hide the whole recommendation section
-                if (recommendationSection) recommendationSection.style.display = 'none';
+                if (recommendationSection) {
+                    recommendationSection.style.display = 'none';
+                    songSection.style.display = 'none';
+                }
+                // hide generation buttons when closing
+                hideAllGenButtons();
+                
             } 
         });
     });
@@ -133,3 +176,19 @@ if (checkbox) {
     });
 } 
 
+// song recs appear when any generation button is clicked
+// attach handlers to all generation buttons (they are hidden by default and shown per-panel)
+document.querySelectorAll('.generate-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // prevent any surrounding anchor's default jump
+        if (e && e.preventDefault) { e.preventDefault(); e.stopPropagation(); }
+        const songOutput = document.getElementById('song-output');
+        if (songOutput) {
+            songOutput.style.display = 'grid';
+            // ensure the element is visible before scrolling
+            requestAnimationFrame(() => {
+                songOutput.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+    });
+});
