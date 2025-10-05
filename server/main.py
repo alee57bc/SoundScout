@@ -67,7 +67,7 @@ def logout():
 def user():
     user_profile = sp.current_user()
 
-    return user_profile['display_name']
+    return user_profile
     #token_info = session.get('token_info')
 
     #if not token_info or not sp_oauth.validate_token(token_info):
