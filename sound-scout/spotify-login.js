@@ -1,5 +1,3 @@
-//import './get-info.js'
-
 //click spotify button to redirect user to login page
 document.getElementById("spotify-button").addEventListener("click", () => {
     //redirect to Spotify login via Flask backend

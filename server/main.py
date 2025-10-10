@@ -6,7 +6,6 @@ from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-#load env vars
 load_dotenv()
 
 app = Flask(__name__)
@@ -47,8 +46,8 @@ def login():
 @app.route("/api/callback")
 def callback():
     code = request.args.get("code")
-    if code:    
-        token_info = sp_oauth.get_cached_token()  
+    if code:
+        token_info = sp_oauth.get_cached_token()
         session['token_info'] = token_info
     # Redirect back to frontend with success flag
     return redirect("http://localhost:5173/?login=success")
@@ -65,9 +64,9 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
-    user_profile = sp.current_user()
+    user = sp.current_user()  
+    return jsonify({"name": user["display_name"]})
 
-    return user_profile
     #token_info = session.get('token_info')
 
     #if not token_info or not sp_oauth.validate_token(token_info):
@@ -78,7 +77,36 @@ def user():
     #return jsonify({
     #    "display_name": profile.get("display_name")
     #})
+
+#get users current top tracks   
+@app.route('/api/top-tracks', methods=['GET'])
+def get_top_tracks():
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
+        auth_url = sp_oauth.get_authorize_url()
+        return redirect(auth_url)
     
+    top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
+    return jsonify(top_tracks)
+
+    #track_ids = [track['id'] for track in top_tracks['items']]
+    #audio_features = sp.audio_features(track_ids)
+
+    #combined = []
+    #for track, features in zip(top_tracks['items'], audio_features):
+    #    combined.append({
+    #        "name": track['name'],
+    #        #"artist": track['artists'][0]['name'],
+    #        "features": {
+    #            "tempo": features['tempo'],
+    #            "danceability": features['danceability'],
+    #            "energy": features['energy'],
+    #            "loudness": features['loudness'],
+    #            "liveness": features['liveness']
+    #        }
+    #    })
+
+    
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)
