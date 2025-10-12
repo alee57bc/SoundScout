@@ -5,8 +5,13 @@ from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask_cors import CORS
 from dotenv import load_dotenv
+from google import genai
 
 load_dotenv()
+
+# Initialize Gemini client
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+gemini_client = genai.GenerativeModel('gemini-pro')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
@@ -107,6 +112,46 @@ def get_top_tracks():
 
     
 
+
+@app.route('/api/generate', methods=['POST'])
+def generate_recommendations():
+    data = request.json
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+    
+    try:
+        num = data.get('num', 3)  # Default to 3 recommendations
+        
+        if data.get('vibe'):
+            prompt = f"""Recommend {num} songs that match this vibe: "{data['vibe']}".
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
+                For each song, add a brief explanation of why it matches the vibe.
+            """
+        elif data.get('genre') or data.get('bpm'):
+            genre_text = f'in the genre "{data["genre"]}"' if data.get('genre') else ''
+            bpm_text = f' with a BPM around {data["bpm"]}' if data.get('bpm') else ''
+            prompt = f"""Recommend {num} songs {genre_text}{bpm_text}.
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
+                For each song, add a brief explanation of why it matches the criteria.
+            """
+        elif data.get('similarSong'):
+            prompt = f"""Recommend {num} songs similar to "{data['similarSong']}".
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
+                For each song, add a brief explanation of why it's similar.
+            """
+        elif data.get('personal'):
+            prompt = f"""Recommend {num} random great songs across any genre.
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
+                For each song, add a brief explanation of why it's worth listening to.
+            """
+        else:
+            return jsonify({'error': 'No valid recommendation criteria provided'}), 400
+
+        response = gemini_client.generate_content(prompt)
+        return jsonify({'recommendations': response.text})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

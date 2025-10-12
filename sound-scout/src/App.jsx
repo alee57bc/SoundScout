@@ -2,47 +2,116 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './App.css'
 
+// Configure axios defaults
+axios.defaults.baseURL = 'http://localhost:8080'
+axios.defaults.withCredentials = true
+
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [array, setArray] = useState([]);
-
-  const fetchAPI = async() => {
-    const response = await axios.get("http://localhost:8080/api/users");
-    setArray(response.data.users);
-  };
+  // State for input fields
+  const [vibe, setVibe] = useState('');
+  const [genre, setGenre] = useState('');
+  const [bpm, setBpm] = useState('');
+  const [similar, setSimilar] = useState('');
   
-  useEffect(() => {
-    fetchAPI()
+  // State for recommendations
+  const [recommendations, setRecommendations] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  },[]);
+  // Function to handle generate button clicks
+  const handleGenerate = async (type) => {
+    setLoading(true);
+    setError('');
+    try {
+      let data = { num: 3 }; // Default number of recommendations
+      
+      switch (type) {
+        case 'vibe':
+          data.vibe = vibe;
+          break;
+        case 'genre':
+          data.genre = genre;
+          if (bpm) data.bpm = parseInt(bpm);
+          break;
+        case 'similar':
+          data.similarSong = similar;
+          break;
+        case 'personal':
+          data.personal = true;
+          break;
+      }
+
+      const response = await axios.post('/api/generate', data);
+      setRecommendations(response.data.recommendations);
+    } catch (err) {
+      setError(err.response?.data?.error || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-        </a>
-        <a href="https://react.dev" target="_blank">
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <div className="app-container">
+      <h1>SoundScout</h1>
+      
+      <div className="input-section">
+        <div className="input-group">
+          <h2>Vibe-based Recommendations</h2>
+          <input
+            type="text"
+            value={vibe}
+            onChange={(e) => setVibe(e.target.value)}
+            placeholder="Enter vibe (e.g., chill, upbeat, indie)"
+          />
+          <button onClick={() => handleGenerate('vibe')} disabled={loading || !vibe}>
+            Generate Vibe Recommendations
+          </button>
+        </div>
 
-          {array.map((user, index) => (
-            <div key={index}>
-              <span>{user}</span>
-              <br></br>
-            </div>
-            ))}
+        <div className="input-group">
+          <h2>Genre & BPM Recommendations</h2>
+          <input
+            type="text"
+            value={genre}
+            onChange={(e) => setGenre(e.target.value)}
+            placeholder="Enter genre"
+          />
+          <input
+            type="number"
+            value={bpm}
+            onChange={(e) => setBpm(e.target.value)}
+            placeholder="Enter BPM"
+          />
+          <button onClick={() => handleGenerate('genre')} disabled={loading || (!genre && !bpm)}>
+            Generate Genre/BPM Recommendations
+          </button>
+        </div>
 
+        <div className="input-group">
+          <h2>Similar Artist/Song Recommendations</h2>
+          <input
+            type="text"
+            value={similar}
+            onChange={(e) => setSimilar(e.target.value)}
+            placeholder="Enter artist or song name"
+          />
+          <button onClick={() => handleGenerate('similar')} disabled={loading || !similar}>
+            Generate Similar Recommendations
+          </button>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
+      {loading && <div className="loading">Generating recommendations...</div>}
+      {error && <div className="error">{error}</div>}
+      
+      {recommendations && (
+        <div className="recommendations">
+          <h2>Recommendations</h2>
+          <pre>{recommendations}</pre>
+        </div>
+      )}
+    </div>
   )
 }
 
