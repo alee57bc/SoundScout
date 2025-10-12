@@ -28,15 +28,14 @@ app.post("/api/generate", async (req, res) => {
     let prompt = "";
 
     if (vibe) {
-      prompt = `Recommend ${num || 1} songs that match this vibe: "${vibe}".`;
+      prompt = `Recommend ${num || 1} songs that match this vibe: "${vibe}". Return only the song titles and artists, no other text.`;
     } else if (genre || bpm) {
       prompt = `Recommend ${num || 1} songs in the genre "${genre || "any"}"${
-        bpm ? ` with a BPM around ${bpm}` : ""
-      }.`;
+        bpm ? ` with a BPM around ${bpm}` : ""}. Return only the song titles and artists, no other text.`;
     } else if (similarSong) {
-      prompt = `Recommend ${num || 1} songs similar to "${similarSong}".`;
+      prompt = `Recommend ${num || 1} songs similar to "${similarSong}". Return only the song titles and artists, no other text.`;
     } else if (random) {
-      prompt = `Give me ${num || 1} random great songs across any genre.`;
+      prompt = `Give me one random song across any genre. Return only the song title and artist, no other text. Try to make it a unique song.`;
     } else {
       return res.status(400).json({ error: "No prompt data provided." });
     }
