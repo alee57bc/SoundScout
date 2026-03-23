@@ -20,8 +20,8 @@ app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 
 #make cookies
 app.config.update(
-    SESSION_COOKIE_SAMESITE="None",   # allow cross-origin
-    SESSION_COOKIE_SECURE=False       # True if using HTTPS; False is okay for localhost
+    SESSION_COOKIE_SAMESITE="lax",   
+    SESSION_COOKIE_SECURE=False
 )
 
 #make it specific which orgins to accept 
@@ -94,10 +94,12 @@ def logout():
 @app.route("/api/user", methods=['GET'])
 def user():
     sp = spotify_client()
+    print("SESSION:", dict(session))
     if not sp:
         return jsonify({"error": "Not logged in"}), 401
 
     me = sp.current_user()
+    print("SPOTIFY USER:", me)
     return jsonify({
         "id": me.get("id"),
         "name": me.get("display_name") or me.get("id"),
