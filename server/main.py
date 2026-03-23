@@ -1,4 +1,5 @@
 import os
+from urllib import response
 from flask import Flask, session, redirect, request, jsonify, url_for
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
@@ -7,13 +8,10 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
 
-import google.generativeai as genai
-
 load_dotenv()
 
 # Initialize Gemini client
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-gemini_client = genai.GenerativeModel('gemini-pro')
+gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
@@ -192,7 +190,10 @@ def generate_recommendations():
         else:
             return jsonify({'error': 'No valid recommendation criteria provided'}), 400
 
-        response = gemini_client.generate_content(prompt)
+        response = gemini_client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+        )
         return jsonify({'recommendations': response.text})
 
     except Exception as e:
