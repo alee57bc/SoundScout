@@ -1,3 +1,78 @@
+// Personal recommendation button logic
+document.getElementById("personal-rec-btn").addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    let num = parseInt(document.getElementById("input-number").value);
+    const warningText = document.getElementById("warning-text");
+    const checkbox = document.getElementById("check");
+    const songOutput = document.getElementById("song-output");
+
+    // Validate number input
+    if (!isNaN(num) && (num < 1 || num > 10)) {
+        songOutput.style.display = "none";
+        warningText.textContent = "Please enter a number between 1 and 10";
+        warningText.style.display = "block";
+        return; 
+    }
+
+    // Validate number input if checkbox is checked
+    if (checkbox.checked && isNaN(num)) {
+        songOutput.style.display = "none";
+        warningText.textContent = "Please enter a number between 1 and 10";
+        warningText.style.display = "block";
+        return;
+    }
+    
+    // Set number to 1 if checkbox is not checked
+    if (!checkbox.checked) {
+        num = 1; 
+    }   
+
+    // Hide warning text if validation passes
+    warningText.style.display = "none";
+    document.getElementById("song-output").innerHTML = "<h2>Gathering recommendations...</h2>";
+    document.getElementById("song-output").style.display = "block";
+    document.getElementById("song-output").scrollIntoView({ behavior: 'smooth' });
+    
+    try {
+        const res = await fetch("/api/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                personal: true,
+                num: num
+            }),
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+            document.getElementById("song-output").innerHTML = `<p>${data.error}</p>`;
+            return;
+        } 
+
+        // Split Gemini's output into list items
+        const listItems = data.recommendations
+            .split(/\n|\d+\.\s+/) // split on line breaks or numbered lists
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0);
+
+        // Convert to HTML
+        const listHTML = `
+            <h2>Here are some songs for the ${vibe} vibe!</h2>
+            <ul>
+                ${listItems.map((item) => `<li>${item}</li>`).join("")}
+            </ul>
+        `;
+
+        songOutput.innerHTML = listHTML;
+    } catch (error) {
+        console.error("Error fetching personalized recommendations:", error);
+        songOutput.innerHTML = `<p>Something went wrong. Please try again.</p>`;
+    }
+});
+
+
 // Vibe button logic
 document.getElementById("vibe-rec-btn").addEventListener("click", async (e) => {
     e.preventDefault();
@@ -79,13 +154,13 @@ document.getElementById("vibe-rec-btn").addEventListener("click", async (e) => {
         document.getElementById("song-output").innerHTML = listHTML;
     } catch (error) {
         console.error("Error fetching recommendations:", error);
-        let errorMessage = "⚠️ Something went wrong. Please try again.";
+        let errorMessage = "Something went wrong. Please try again.";
         
         try {
             // Try to get detailed error from response
             const errorData = await error.response?.json();
             if (errorData?.error) {
-                errorMessage = `⚠️ Error: ${errorData.error}`;
+                errorMessage = `Error: ${errorData.error}`;
                 if (errorData.details) {
                     errorMessage += `<br>Details: ${errorData.details}`;
                 }
@@ -196,12 +271,12 @@ document.getElementById("genre-rec-btn").addEventListener("click", async (e) => 
         document.getElementById("song-output").innerHTML = listHTML;
     } catch (error) {
         console.error("Error fetching recommendations:", error);
-        let errorMessage = "⚠️ Something went wrong. Please try again.";
+        let errorMessage = "Something went wrong. Please try again.";
         
         try {
             const errorData = await error.response?.json();
             if (errorData?.error) {
-                errorMessage = `⚠️ Error: ${errorData.error}`;
+                errorMessage = `Error: ${errorData.error}`;
                 if (errorData.details) {
                     errorMessage += `<br>Details: ${errorData.details}`;
                 }
@@ -290,12 +365,12 @@ document.getElementById("similarity-rec-btn").addEventListener("click", async (e
         document.getElementById("song-output").innerHTML = listHTML;
     } catch (error) {
         console.error("Error fetching recommendations:", error);
-        let errorMessage = "⚠️ Something went wrong. Please try again.";
+        let errorMessage = "Something went wrong. Please try again.";
         
         try {
             const errorData = await error.response?.json();
             if (errorData?.error) {
-                errorMessage = `⚠️ Error: ${errorData.error}`;
+                errorMessage = `Error: ${errorData.error}`;
                 if (errorData.details) {
                     errorMessage += `<br>Details: ${errorData.details}`;
                 }
@@ -351,12 +426,12 @@ document.getElementById("random-rec-btn").addEventListener("click", async (e) =>
         document.getElementById("song-output").innerHTML = listHTML;
     } catch (error) {
         console.error("Error fetching recommendations:", error);
-        let errorMessage = "⚠️ Something went wrong. Please try again.";
+        let errorMessage = "Something went wrong. Please try again.";
         
         try {
             const errorData = await error.response?.json();
             if (errorData?.error) {
-                errorMessage = `⚠️ Error: ${errorData.error}`;
+                errorMessage = `Error: ${errorData.error}`;
                 if (errorData.details) {
                     errorMessage += `<br>Details: ${errorData.details}`;
                 }

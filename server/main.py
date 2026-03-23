@@ -151,24 +151,21 @@ def generate_recommendations():
         return jsonify({'error': 'No data provided'}), 400
     
     try:
-        num = data.get('num', 3)  # Default to 3 recommendations
+        num = data.get('num', 1)  # Default to 1 recommendations
         
         if data.get('vibe'):
             prompt = f"""Recommend {num} songs that match this vibe: "{data['vibe']}".
                 Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
-                For each song, add a brief explanation of why it matches the vibe.
             """
         elif data.get('genre') or data.get('bpm'):
             genre_text = f'in the genre "{data["genre"]}"' if data.get('genre') else ''
             bpm_text = f' with a BPM around {data["bpm"]}' if data.get('bpm') else ''
             prompt = f"""Recommend {num} songs {genre_text}{bpm_text}.
                 Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
-                For each song, add a brief explanation of why it matches the criteria.
             """
         elif data.get('similarSong'):
             prompt = f"""Recommend {num} songs similar to "{data['similarSong']}".
                 Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
-                For each song, add a brief explanation of why it's similar.
             """
         elif data.get('personal'):
             sp = spotify_client()
@@ -196,7 +193,9 @@ def generate_recommendations():
             """
 
         else:
-            return jsonify({'error': 'No valid recommendation criteria provided'}), 400
+            prompt = f"""Recommend 1 random song that is not popular.
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
+            """
 
         response = gemini_client.models.generate_content(
         model="gemini-2.5-flash",
