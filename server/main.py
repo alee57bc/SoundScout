@@ -91,8 +91,9 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
-    sp = spotify_client()
     print("SESSION:", dict(session))
+
+    sp = spotify_client()
     if not sp:
         return jsonify({"error": "Not logged in"}), 401
 
