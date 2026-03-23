@@ -76,13 +76,15 @@ def callback():
     token_info = sp_oauth.get_access_token(code)
     session['token_info'] = token_info
 
+    print("CALLBACK SESSION:", dict(session))
+
     # Redirect back to frontend with success flag
-    return redirect("http://localhost:5173/?login=success")
+    return redirect("http://127.0.0.1:5173/?login=success")
 
 #return to frontend
 @app.route("/api/frontend")
 def frontend():
-    return redirect('http://localhost:5173/')
+    return redirect('http://127.0.0.1:5173/')
 
 @app.route("/api/logout")
 def logout():

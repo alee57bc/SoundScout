@@ -1,7 +1,7 @@
 //click spotify button to redirect user to login page
 document.getElementById("spotify-button").addEventListener("click", () => {
     //redirect to Spotify login via Flask backend
-    window.location.href = "http://localhost:8080/api/login";
+    window.location.href = "/api/login";
 });
 
 async function checkLogin() {
@@ -10,7 +10,7 @@ async function checkLogin() {
     const welcomeText = document.getElementById("welcome-text");
     
     try {
-        const userRes = await fetch("http://localhost:8080/api/user", {
+        const userRes = await fetch("/api/user", {
             credentials: "include"
         });
 
