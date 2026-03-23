@@ -14,6 +14,10 @@ window.addEventListener("load", async () => {
 
         if (loginSection) loginSection.style.display = 'none';
         if (loggedInSection) loggedInSection.style.display = 'flex';
+
+        const userRes = await fetch("http://localhost:8080/api/user", { credentials: "include" });
+        const user = await userRes.json();
+        document.getElementById("welcome-text").textContent = `Welcome, ${user.name}!`;
     }
 });
 

@@ -7,6 +7,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
 
+import google.generativeai as genai
+
 load_dotenv()
 
 # Initialize Gemini client
@@ -39,6 +41,25 @@ sp_oauth = SpotifyOAuth(
 
 sp = Spotify(auth_manager=sp_oauth)
 
+#token helper function
+def get_token():
+    token_info = session.get('token_info')
+    if not token_info:
+        return None
+
+    # refresh if expired
+    if sp_oauth.is_token_expired(token_info):
+        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+        session['token_info'] = token_info
+
+    return token_info['access_token']
+
+def spotify_client():
+    access_token = get_token()
+    if not access_token:
+        return None
+    return Spotify(auth=access_token)
+
 #routes
 @app.route("/api/login")
 def login():
@@ -51,9 +72,12 @@ def login():
 @app.route("/api/callback")
 def callback():
     code = request.args.get("code")
-    if code:
-        token_info = sp_oauth.get_cached_token()
-        session['token_info'] = token_info
+    if not code:
+        return "Missing code", 400
+    
+    token_info = sp_oauth.get_access_token(code)
+    session['token_info'] = token_info
+
     # Redirect back to frontend with success flag
     return redirect("http://localhost:5173/?login=success")
 
@@ -69,49 +93,48 @@ def logout():
 
 @app.route("/api/user", methods=['GET'])
 def user():
-    user = sp.current_user()  
-    return jsonify({"name": user["display_name"]})
+    sp = spotify_client()
+    if not sp:
+        return jsonify({"error": "Not logged in"}), 401
 
-    #token_info = session.get('token_info')
-
-    #if not token_info or not sp_oauth.validate_token(token_info):
-    #    return jsonify({"error": "User not logged in"}), 401
-    
-    #sp1 = Spotify(auth=token_info['access_token'])
-    #profile = sp1.current_user()
-    #return jsonify({
-    #    "display_name": profile.get("display_name")
-    #})
+    me = sp.current_user()
+    return jsonify({
+        "id": me.get("id"),
+        "name": me.get("display_name") or me.get("id"),
+        "email": me.get("email") 
+    })
 
 #get users current top tracks   
 @app.route('/api/top-tracks', methods=['GET'])
 def get_top_tracks():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
-    
-    top_tracks = sp.current_user_top_tracks(limit=10, time_range='short_term')
-    return jsonify(top_tracks)
+    sp = spotify_client()
+    if not sp:
+        return jsonify({"error": "Not logged in"}), 401
 
-    #track_ids = [track['id'] for track in top_tracks['items']]
-    #audio_features = sp.audio_features(track_ids)
+    # short_term ~ last 4 weeks; you can also offer medium_term/long_term
+    items = sp.current_user_top_tracks(limit=20, time_range="short_term")["items"]
 
-    #combined = []
-    #for track, features in zip(top_tracks['items'], audio_features):
-    #    combined.append({
-    #        "name": track['name'],
-    #        #"artist": track['artists'][0]['name'],
-    #        "features": {
-    #            "tempo": features['tempo'],
-    #            "danceability": features['danceability'],
-    #            "energy": features['energy'],
-    #            "loudness": features['loudness'],
-    #            "liveness": features['liveness']
-    #        }
-    #    })
+    return jsonify([{
+        "name": t["name"],
+        "artist": ", ".join(a["name"] for a in t["artists"]),
+        "id": t["id"],
+        "uri": t["uri"]
+    } for t in items])
 
-    
+#get users top artists
+@app.route('/api/top-artists')
+def top_artists():
+    sp = spotify_client()
+    if not sp:
+        return jsonify({"error": "Not logged in"}), 401
 
+    items = sp.current_user_top_artists(limit=15, time_range="short_term")["items"]
+    return jsonify([{
+        "name": a["name"],
+        "genres": a.get("genres", [])[:5],
+        "id": a["id"],
+        "uri": a["uri"]
+    } for a in items])
 
 @app.route('/api/generate', methods=['POST'])
 def generate_recommendations():
@@ -140,10 +163,30 @@ def generate_recommendations():
                 For each song, add a brief explanation of why it's similar.
             """
         elif data.get('personal'):
-            prompt = f"""Recommend {num} random great songs across any genre.
-                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
-                For each song, add a brief explanation of why it's worth listening to.
+            sp = spotify_client()
+            if not sp:
+                return jsonify({"error": "Not logged in"}), 401
+            top_tracks = sp.current_user_top_tracks(limit=15, time_range="short_term")["items"]
+            top_artists = sp.current_user_top_artists(limit=10, time_range="short_term")["items"]
+
+            track_lines = [f'{t["name"]} — {t["artists"][0]["name"]}' for t in top_tracks]
+            artist_lines = [a["name"] for a in top_artists]
+
+            prompt = f"""
+            You are a music recommendation assistant.
+            Recommend {num} songs the user would likely enjoy.
+
+            User's top artists:
+            {", ".join(artist_lines)}
+
+            User's top tracks:
+            - """ + "\n- ".join(track_lines) + """
+
+            Rules:
+            - Include a mix of familiar-adjacent and a few “stretch” recommendations.
+            - Return as JSON list: [{"song":"...","artist":"...","why":"..."}]
             """
+
         else:
             return jsonify({'error': 'No valid recommendation criteria provided'}), 400
 
