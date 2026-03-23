@@ -43,7 +43,7 @@ document.getElementById("vibe-rec-btn").addEventListener("click", async (e) => {
     document.getElementById("song-output").scrollIntoView({ behavior: 'smooth' });
     try {
         // Send request to backend
-        const res = await fetch("http://localhost:8080/api/generate", {
+        const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -164,7 +164,7 @@ document.getElementById("genre-rec-btn").addEventListener("click", async (e) => 
     document.getElementById("song-output").scrollIntoView({ behavior: 'smooth' });
 
     try { 
-        const res = await fetch("http://localhost:8080/api/generate", {
+        const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -259,7 +259,7 @@ document.getElementById("similarity-rec-btn").addEventListener("click", async (e
     document.getElementById("song-output").scrollIntoView({ behavior: 'smooth' });
 
     try {
-        const res = await fetch("http://localhost:8080/api/generate", {
+        const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -321,7 +321,7 @@ document.getElementById("random-rec-btn").addEventListener("click", async (e) =>
     document.getElementById("song-output").scrollIntoView({ behavior: 'smooth' });
 
     try {
-        const res = await fetch("http://localhost:8080/api/generate", {
+        const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 

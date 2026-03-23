@@ -24,7 +24,7 @@ app.config.update(
 
 #make it specific which orgins to accept 
 #cors = CORS(app, origins="*")
-cors = CORS(app, supports_credentials=True, origins="http://localhost:5173")
+cors = CORS(app, supports_credentials=True, origins="http://127.0.0.1:5173")
 
 #spotify OAuth setup
 cache_handler = FlaskSessionCacheHandler(session)
@@ -46,11 +46,16 @@ def get_token():
         return None
 
     # refresh if expired
-    if sp_oauth.is_token_expired(token_info):
-        token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-        session['token_info'] = token_info
+    try: 
+        if sp_oauth.is_token_expired(token_info):
+            token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
+            session['token_info'] = token_info
 
-    return token_info['access_token']
+        return token_info['access_token']
+    except Exception as e:
+        print("Token error:", e)
+        session.pop('token_info', None)
+        return None
 
 def spotify_client():
     access_token = get_token()
