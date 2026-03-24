@@ -14,7 +14,7 @@
 
     // Map panel id -> generation button id (match actual IDs in index.html)
     const generationMap = {
-        'personal-recommendations': 'personal-rec-button',
+        'personal-recommendations': 'personal-rec-btn',
         'vibe-recommendations': 'vibe-rec-btn',
         'genre-recommendations': 'genre-rec-btn',
         'similarity-recommendations': 'similarity-rec-btn',

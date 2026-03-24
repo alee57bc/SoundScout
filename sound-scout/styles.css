@@ -78,12 +78,34 @@ p {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-}
+} 
 
 #spotify-button:hover {
     background: #1ed760;
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(29, 185, 84, 0.3);
+}
+
+#logout-button{
+    align-self: center;  
+    padding: 10px 20px;  
+    background: #b18ae3;
+    color: white;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+#logout-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
 }
 
 /* features section */

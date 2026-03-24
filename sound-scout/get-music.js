@@ -59,7 +59,7 @@ document.getElementById("personal-rec-btn").addEventListener("click", async (e) 
 
         // Convert to HTML
         const listHTML = `
-            <h2>Here are some songs for the ${vibe} vibe!</h2>
+            <h2>Here are some songs for you!</h2>
             <ul>
                 ${listItems.map((item) => `<li>${item}</li>`).join("")}
             </ul>

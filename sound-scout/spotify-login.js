@@ -4,6 +4,12 @@ document.getElementById("spotify-button").addEventListener("click", () => {
     window.location.href = "/api/login";
 });
 
+//click logout button to logout user and update UI
+document.getElementById("logout-button").addEventListener("click", async () => {
+    //redirect to Spotify lougout via Flask backend
+    window.location.href = "/api/logout";
+});
+
 async function checkLogin() {
     const loginSection = document.getElementById('spotify-login');
     const loggedInSection = document.getElementById('spotify-logged-in');

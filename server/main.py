@@ -174,24 +174,9 @@ def generate_recommendations():
             top_tracks = sp.current_user_top_tracks(limit=15, time_range="short_term")["items"]
             top_artists = sp.current_user_top_artists(limit=10, time_range="short_term")["items"]
 
-            track_lines = [f'{t["name"]} — {t["artists"][0]["name"]}' for t in top_tracks]
-            artist_lines = [a["name"] for a in top_artists]
-
-            prompt = f"""
-            You are a music recommendation assistant.
-            Recommend {num} songs the user would likely enjoy.
-
-            User's top artists:
-            {", ".join(artist_lines)}
-
-            User's top tracks:
-            - """ + "\n- ".join(track_lines) + """
-
-            Rules:
-            - Include a mix of familiar-adjacent and a few “stretch” recommendations.
-            - Return as JSON list: [{"song":"...","artist":"...","why":"..."}]
+            prompt = f"""Recommend {num} songs for the user that match their preferences. Use the data in "{top_tracks}" and "{top_artists}" to inform your recommendation.
+                Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
             """
-
         else:
             prompt = f"""Recommend 1 random song that is not popular.
                 Please return your recommendations as plain text with each song on its own line, formatted as "Song Title by Artist Name".
